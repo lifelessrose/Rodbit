@@ -10,11 +10,12 @@
             padding: 0;
             background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             font-family: 'Courier New', monospace;
-            overflow: hidden;
+            overflow-x: hidden;
         }
         #gameContainer {
             position: relative;
@@ -24,6 +25,7 @@
             box-shadow: 0 0 30px rgba(0,0,0,0.5);
             width: 800px;
             height: 400px;
+            margin-bottom: 0;
         }
         #gameCanvas {
             display: block;
@@ -144,23 +146,24 @@
             z-index: 10;
         }
         #instructions {
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            bottom: 20px;
-            width: 95%;
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100vw;
             text-align: center;
             font-size: 16px;
-            z-index: 50;
+            z-index: 101;
             background: rgba(34,34,34,0.96);
             color: #ffec80;
-            border-radius: 14px;
-            border: 2px solid #ffe066;
-            padding: 16px 14px;
+            border-radius: 0;
+            border-top: 2px solid #ffe066;
+            border-bottom: none;
+            padding: 18px 0 14px 0;
             font-weight: bold;
-            box-shadow: 0 0 8px 1px #000a;
+            box-shadow: 0 -2px 12px #000a;
             letter-spacing: 1px;
-            margin-bottom: 0;
+            margin: 0;
             display: none;
         }
         .game-over {
@@ -190,7 +193,7 @@
             z-index: 20;
             box-shadow: 0 0 30px rgba(76,175,80,0.8);
         }
-        button {
+        button, .footer-btn {
             background: #4CAF50;
             color: white;
             border: none;
@@ -202,9 +205,114 @@
             margin: 5px;
             transition: all 0.3s ease;
         }
+        .footer-btn {
+            background: #ffe066;
+            color: #222;
+            font-weight: bold;
+            padding: 10px 26px;
+            margin: 7px 10px;
+            font-size: 16px;
+            box-shadow: 0 2px 8px #0002;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .footer-btn:hover {
+            background: #ffd700;
+            color: #111;
+        }
         button:hover {
             background: #45a049;
             transform: translateY(-1px);
+        }
+        #footer {
+            width: 800px;
+            padding: 0;
+            margin-top: 0;
+            margin-bottom: 10px;
+            background: #222;
+            border-radius: 0 0 8px 8px;
+            color: #eee;
+            font-size: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 6px 24px #0005;
+            position: relative;
+            z-index: 102;
+        }
+        .footer-content {
+            padding: 16px 20px 7px 20px;
+            width: 100%;
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            gap: 16px;
+        }
+        .policies-banner {
+            background: #111;
+            color: #ffe066;
+            width: 100%;
+            padding: 13px 10px 11px 10px;
+            font-size: 15px;
+            text-align: center;
+            border-top: 1px solid #444;
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+        }
+        .policies-summary {
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+        .policies-dropdown-btn {
+            background: #333;
+            color: #ffe066;
+            border: none;
+            border-radius: 4px;
+            padding: 5px 14px;
+            font-size: 15px;
+            font-family: 'Courier New', monospace;
+            cursor: pointer;
+            margin-bottom: 5px;
+        }
+        .policies-dropdown-btn:hover {
+            background: #444;
+        }
+        .policies-details {
+            background: #222;
+            color: #ffe066;
+            border: 1px solid #444;
+            border-radius: 4px;
+            padding: 12px;
+            margin-top: 5px;
+            margin-bottom: 5px;
+            width: 95%;
+            max-width: 600px;
+            text-align: left;
+            font-size: 15px;
+            display: none;
+        }
+        .accept-btn {
+            background: #ffe066;
+            color: #222;
+            border: none;
+            border-radius: 5px;
+            padding: 7px 18px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 4px;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+        .accept-btn:hover {
+            background: #ffd700;
+            color: #000;
         }
         @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
         @keyframes loading { 0% { width: 0%; } 100% { width: 100%; } }
@@ -212,6 +320,10 @@
         @keyframes glow {
             from { box-shadow: 0 4px 15px rgba(238,90,36,0.4); }
             to { box-shadow: 0 4px 25px rgba(238,90,36,0.8); }
+        }
+        @media (max-width: 820px) {
+            #gameContainer, #footer { width: 100vw; border-radius: 0; }
+            .footer-content { flex-direction: column; gap: 10px; }
         }
     </style>
 </head>
@@ -228,7 +340,6 @@
             </div>
             <div class="loading-text">Loading Game Assets...</div>
         </div>
-        
         <div id="startScreen" style="display: none;">
             <div class="game-title">ROD BIT</div>
             <div class="start-graphics">
@@ -239,38 +350,54 @@
             </div>
             <button class="start-button" onclick="startGame()">START GAME</button>
         </div>
-        
         <canvas id="gameCanvas" width="800" height="400" style="display: none;"></canvas>
-        
         <div id="ui" style="display: none;">
             <div>Score: <span id="score">0</span></div>
-            <div>Lives: <span id="lives">3</span></div>
+            <div>Lives: <span id="lives">5</span></div>
         </div>
-        
         <div id="levelInfo" style="display: none;">
             <div>Level: <span id="currentLevel">1</span></div>
         </div>
-        
-        <div id="instructions">
-            Use <b>ARROW KEYS</b> or <b>WASD</b> to move and jump • Collect coins • Avoid enemies • Don't fall off the screen!
+    </div>
+    <div id="instructions">
+        Use <b>ARROW KEYS</b> or <b>WASD</b> to move and jump • Collect coins • Avoid enemies • Don't fall off the screen!
+    </div>
+    <div id="footer">
+        <div class="footer-content">
+            <a href="mailto:lifelessrose@witherco.xyz" class="footer-btn">Contact</a>
+            <a href="https://discord.gg/BebueR9MrY" target="_blank" class="footer-btn">Discord</a>
+        </div>
+        <div class="policies-banner" id="policiesBanner">
+            <span class="policies-summary">
+                This site uses cookies and stores limited data to enhance your experience. By clicking "Accept", you agree to our Policies and use of cookies.
+            </span>
+            <button class="policies-dropdown-btn" onclick="togglePoliciesDetails()" id="policiesDropdownBtn">Show Policies</button>
+            <div class="policies-details" id="policiesDetails">
+                <strong>Policies & Cookies:</strong><br>
+                <ul>
+                    <li>This game stores minimal data in your browser (such as high scores or settings) and uses cookies for session management.</li>
+                    <li>No personal information is collected or shared with third parties.</li>
+                    <li>By using this site, you accept our use of cookies and agree to standard web practices.</li>
+                    <li>For questions, contact lifelessrose@witherco.xyz or join the Discord server.</li>
+                </ul>
+                <div style="margin-top:7px;font-size:13px;color:#ffec80;">
+                    <b>Note:</b> You can clear cookies in your browser settings at any time.
+                </div>
+            </div>
+            <button class="accept-btn" onclick="acceptPolicies()">Accept</button>
         </div>
     </div>
     <script>
-        // Draw monsters and coins on start screen
         function drawStartScreenArt() {
             const startCanvas = document.getElementById('startCanvas');
             if (!startCanvas) return;
             const ctx = startCanvas.getContext('2d');
             ctx.clearRect(0, 0, startCanvas.width, startCanvas.height);
-
-            // Platforms
             ctx.fillStyle = '#8B4513';
             ctx.fillRect(50, 150, 120, 20);
             ctx.fillRect(220, 120, 100, 15);
             ctx.fillRect(400, 80, 80, 15);
             ctx.fillRect(550, 60, 110, 15);
-
-            // Player
             ctx.fillStyle = '#FF6B6B';
             ctx.fillRect(70, 130, 20, 20);
             ctx.fillStyle = '#FFFFFF';
@@ -278,8 +405,6 @@
             ctx.fillRect(84, 133, 3, 3);
             ctx.fillStyle = '#000000';
             ctx.fillRect(77, 144, 6, 2);
-
-            // Coins
             function drawCoin(x, y) {
                 ctx.fillStyle = '#FFD700';
                 ctx.beginPath();
@@ -294,8 +419,6 @@
             drawCoin(250, 105);
             drawCoin(420, 65);
             drawCoin(580, 45);
-
-            // Enemies
             function drawEnemy(x, y) {
                 ctx.fillStyle = '#FF4444';
                 ctx.fillRect(x, y, 15, 15);
@@ -308,17 +431,26 @@
             drawEnemy(295, 105);
             drawEnemy(465, 65);
             drawEnemy(610, 45);
-
-            // Some atmospheric background
             ctx.globalAlpha = 0.15;
             ctx.fillStyle = '#0f3460';
             ctx.fillRect(0, 0, 700, 180);
             ctx.globalAlpha = 1;
         }
-
-        // Make each level harder: more platforms, enemies move faster, more coins to collect.
+        function acceptPolicies() {
+            document.getElementById('policiesBanner').style.display = 'none';
+        }
+        function togglePoliciesDetails() {
+            var details = document.getElementById('policiesDetails');
+            var btn = document.getElementById('policiesDropdownBtn');
+            if (details.style.display === "block") {
+                details.style.display = "none";
+                btn.textContent = "Show Policies";
+            } else {
+                details.style.display = "block";
+                btn.textContent = "Hide Policies";
+            }
+        }
         const levels = [
-            // Level 1 (easiest)
             {
                 platforms: [
                     { x: 0, y: 350, width: 200, height: 50 },
@@ -339,7 +471,6 @@
                     { x: 300, y: 280, width: 15, height: 15, direction: 1, speed: 1, platform: 1 }
                 ]
             },
-            // Level 2 (harder: more enemies, more coins, longer platforms)
             {
                 platforms: [
                     { x: 0, y: 350, width: 170, height: 50 },
@@ -363,7 +494,6 @@
                     { x: 550, y: 246, width: 15, height: 15, direction: -1, speed: 1.2, platform: 3 }
                 ]
             },
-            // Level 3 (harder: more enemies, even less space)
             {
                 platforms: [
                     { x: 0, y: 350, width: 130, height: 50 },
@@ -390,7 +520,6 @@
                     { x: 710, y: 110, width: 15, height: 15, direction: -1, speed: 1.8, platform: 6 }
                 ]
             },
-            // Level 4 (even harder: fast enemies, more coins, small platforms)
             {
                 platforms: [
                     { x: 0, y: 350, width: 110, height: 50 },
@@ -420,7 +549,6 @@
                     { x: 880, y: 250, width: 15, height: 15, direction: 1, speed: 2.4, platform: 8 }
                 ]
             },
-            // Level 5 (hardest: tiny platforms, lots of coins, fast enemies)
             {
                 platforms: [
                     { x: 0, y: 350, width: 80, height: 50 },
@@ -458,7 +586,6 @@
                 ]
             }
         ];
-        
         let platforms = [];
         let coins = [];
         let enemies = [];
@@ -482,7 +609,7 @@
         const ctx = canvas.getContext('2d');
         let gameState = {
             score: 0,
-            lives: 3,
+            lives: 5,
             gameOver: false,
             camera: { x: 0, y: 0 },
             currentLevel: 1,
@@ -508,7 +635,6 @@
             onGround: false,
             color: '#FF6B6B'
         };
-
         function loadLevel(levelNum) {
             const level = levels[levelNum - 1];
             platforms = JSON.parse(JSON.stringify(level.platforms));
@@ -669,7 +795,7 @@
         }
         function restartGame() {
             gameState.score = 0;
-            gameState.lives = 3;
+            gameState.lives = 5;
             gameState.gameOver = false;
             gameState.camera.x = 0;
             gameState.currentLevel = 1;
